@@ -14,7 +14,7 @@
  */
 
 // ── CONFIGURATION ──────────────────────────────────────────────────────────
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = '/api';
 const PREDICT_ENDPOINT = `${BACKEND_URL}/predict`;
 const HEALTH_ENDPOINT = `${BACKEND_URL}/health`;
 
