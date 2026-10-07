@@ -1,5 +1,8 @@
-tensorflow>=2.16.1,<2.18.0
-mediapipe>=0.10.14
+# NOTE: TensorFlow is intentionally NOT used at runtime. Its wheels need AVX and
+# crash with SIGILL on CPUs/VMs that don't expose it. The model runs via ONNX Runtime.
+onnxruntime>=1.18
+# mediapipe >=1.0 removed the legacy mp.solutions API used in inference.py
+mediapipe==0.10.21
 opencv-contrib-python>=4.11.0.86
 numpy>=1.26.4,<2.0.0
 fastapi>=0.111.0

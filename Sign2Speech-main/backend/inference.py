@@ -1,11 +1,13 @@
 import json
 import cv2
 import numpy as np
-import tensorflow as tf
+import onnxruntime as ort
 import mediapipe as mp
 
 
-MODEL_PATH = "ISL_INCLUDE_NEW.keras"
+# ONNX export of ISL_INCLUDE_NEW.keras (see convert_to_onnx.py). Used instead of
+# TensorFlow because TF wheels need AVX, which some hosts/VMs do not expose.
+MODEL_PATH = "ISL_INCLUDE_NEW.onnx"
 
 LABEL_MAP_PATHS = {
     "english": "label_map_english.json",
@@ -19,10 +21,11 @@ FEATURE_SIZE = 1662
 mp_holistic = mp.solutions.holistic
 
 
-model = tf.keras.models.load_model(
+session = ort.InferenceSession(
     MODEL_PATH,
-    compile=False
+    providers=["CPUExecutionProvider"]
 )
+INPUT_NAME = session.get_inputs()[0].name
 
 
 def read_video_frames(video_path, max_duration_sec=7):
@@ -154,10 +157,10 @@ def predict_video(video_path, language="english"):
         axis=0
     )
 
-    prediction = model.predict(
-        input_tensor,
-        verbose=0
-    )
+    prediction = session.run(
+        None,
+        {INPUT_NAME: input_tensor.astype(np.float32)}
+    )[0]
 
     class_id = int(np.argmax(prediction))
     confidence = float(np.max(prediction))
